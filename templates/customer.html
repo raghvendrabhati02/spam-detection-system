@@ -1,160 +1,538 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en" class="dark">
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Customer Segmentation</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css')}}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-  </head>
-  <body>
-    <nav class="navbar navbar-light bg-light static-top">
-        <div class="container-fluid">
-           <a class="navbar-brand" href="https://ineuron.ai"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIkAAAAlCAMAAABBJDpuAAAAVFBMVEX/fgD/iQA7NzIyMjMnNYInNYEnNYInNYEzMzInNYQnNYETJzsnNYIwN1wxMjNoTis4O1YrNm0xOF47PE9DP0dEQEVpTVkAJJ4nNYEOLJHJbiAzMzOmmmHRAAAAFnRSTlOh/vu+986oen9fP2UqEzQkFAIDAAEEILVBJQAAA3FJREFUWMPNmO2WoyAMQG0VBARtdVRs3/89NwkgaF1rd2aOm18tIrnkgwSz7n+R7LcV1ELkeS7E7VySRlyfQXJhTiO55c+liP4cEuH1X8E7gaV+S3Jv2zYZ/Vr+/Sdx2vP6doc/fSPcf/GOpLSFVXFUW8t+giRP47TOd60yk1hbxIhSP0ACKPWrvw7YBIT/lcQY84G3Wk17ugWQfg5UsQJpjflKSLQi7xTWyk0SXTJ4VnB5D1yccxmp4Z+mX5KGNS+SPXVNll0ulyxL0wYmloBB6zL/MpCoAgjAJiUM6w0SboMwPUdRogvNKcNM3smFdRvEcJJkKcflQa+X0pNIfBGW0zKqjyQtw4VLKQlI7ZLgdrRNSZDjMQx2GB4pCkxkCrfGWUTJ0Egan6muCHgJCUwtnCk0mrJ9Q8K5LUqtdSfynkAedhynaRqngVDaXLiJEAzkFkM71IuIlWRYtSQpbXSZDvQ7JPCei9brs+oaABkn74LRIkpFaVxGnzjvIxTYREOoEwn5r01JTDRTcO87Eu3zNUeTPKZpjrIRrNIDCjzALbPk7LJMIokOEQu2K7yKQAKvFDF9pVe0R+LGb7h1MMkw2ijjA/1zhSfSphvEAChXJEhAqwYStIJWXnTpvbdH4hTUwSQ2JRmQpILDLYbB7J41SYiLcNozu5Z3JMo7RxBJahI7WSRByCMkqJt9hySESbVJcvmARJGFExJmdBSl2oM2+T4JLWfgaGFptizlPUm1FydHSdyZ7UnS4ySph2kS0kJrkvr5NJg7dnrJnfxgxPozRPGtkyPNOxtaiDvbIAF9L+5B5zTI2BwlwXmM+U3zReav3o0F8oUEFFZ42McDZYomOUziFmezgWyo251Uc1nyKJol7URCEvIYUEbHYaEGQi9C9egwCdVfHwiaajfjKMUcHcRacCylhWJbJDfq47EEDhYqoIWjHnwDXZPpPiChPQelLU+Cbm4w50FmYgkvFwpiWwCC/Um/SLcNElOC9RVj6qWpCiEMvRUK4zLpdKmPw8rVldy/qxjn60wLrVLWJIPLiZJRr3fsvnOHPvare+lB93tb37T20D82jqOt+zNuXhuNvNhp7X+PpHb3rvV9R5xjE2SpyCN9ffQO+GtWIZr5Xnytz4gTMIRYfys47/uJEXny/aQ/95tSUwmU+uRvSp/IHzQqZYpYrQmxAAAAAElFTkSuQmCC" /></a>
+    <title>PrecisionCustomer – AI-Powered Customer Segmentation</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f7ff',
+                            100: '#e0efff',
+                            200: '#b8dcff',
+                            300: '#7abeff',
+                            400: '#339cff',
+                            500: '#0070f3',
+                            600: '#005edb',
+                            700: '#004cb5',
+                            800: '#004094',
+                            900: '#00357a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+        .dark .glass {
+            background: rgba(17, 24, 39, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        body {
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen transition-colors duration-300">
+    
+    <!-- Decorative background elements -->
+    <div class="fixed -top-40 -left-40 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl -z-10"></div>
+    <div class="fixed top-1/2 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -z-10"></div>
+    <div class="fixed -bottom-40 left-1/3 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl -z-10"></div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 glass border-b shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary-500 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/30">
+                    <i class="fa-solid fa-users-viewfinder text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-primary-500 to-purple-600 bg-clip-text text-transparent">PrecisionCustomer</span>
+                    <span class="hidden md:inline-block ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-950 text-primary-600 dark:text-primary-300 border border-primary-200 dark:border-primary-800">AI Segmentation</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors" title="Toggle Theme">
+                    <i id="theme-icon" class="fa-solid fa-moon text-slate-500 dark:text-amber-400"></i>
+                </button>
+                <a href="https://github.com/raghvendrabhati02" target="_blank" class="flex items-center gap-2 text-sm font-semibold hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+                    <i class="fa-brands fa-github text-lg"></i>
+                    <span class="hidden sm:inline">Raghvendra Bhati</span>
+                </a>
+            </div>
         </div>
-     </nav>
-    <section>
-        <div class="container-fluid">
-            <div class="container">
-                <form action="/" method="post">
-                    <legend>Customer Segmentation</legend>
-                    <div class="mb-3">
-                        <label for="Age">Age</label>
-                        <input type="number" class="form-control" id="Age" name="Age"  placeholder="Customer Age" required="required">
-                      </div>
-        
-                      <div class="mb-3">
-                        <label for="Education">Education of customer</label>
-                        <select class="form-control" id="Education" name="Education" placeholder="Education of Customer" required="required">
-                            <option value="" disabled selected>Select Education</option>
-                            <option value="0">Basic</option>
-                            <option value="1">2n Cycle</option>
-                            <option value = "2">Graduation</option>
-                            <option value = "3">Master</option>
-                            <option value = "4">PhD</option>
-                        </select>
-                      </div>
-        
-                      <div class="mb-3">
-                        <label for="Marital_Status">Married</label>
-                        <select class="form-control" id="Marital_Status" name="Marital_Status" placeholder="Is married" required="required">
-                            <option value="" disabled selected>Is married</option>
-                            <option value="0">N</option>
-                            <option value = "1">Y</option>
-                        </select>
-                      </div>
-        
-                      <div class="mb-3">
-                        <label for="Parental_Status">Has Kids</label>
-                        <select class="form-control" id="Parental_Status" name="Parental_Status" placeholder="Parental_Status" required="required">
-                            <option value="" disabled selected>Has kids</option>
-                            <option value = "0">N</option>
-                            <option value = "1">Y</option>
-                        </select>
-                      </div>
-        
-                      <div class="mb-3">
-                        <label for="Children">Number of Children</label>
-                        <input type="number" class="form-control" id="Children" name="Children"  placeholder="No of Children" required = "required">
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label for="Income">Income of customer</label>
-                            <label for="company_age">Income of customer</label>
-                            <input type="number" class="form-control" id="Income" name="Income"  placeholder="Customer income" required="required">
-                          </div>
-        
-                      <div class="mb-3">
-                        <label for="Total_Spending">Total money Spending </label>
-                        <input type="number" class="form-control" id="Total_Spending" name="Total_Spending"  placeholder="Total money spending" required="required">
-                      </div>
+    </header>
 
-                      <div class="mb-3">
-                        <label for="Days_as_Customer">Days of being customer</label>
-                        <input type="number" class="form-control" id="Days_as_Customer" name="Days_as_Customer"  placeholder="Days of being customer" required="required">
-                      </div>
-                      
-                      <div class="mb-3">
-                        <label for="Recency">Number of days since customer's last purchase</label>
-                        <input type="number" class="form-control" id="Recency" name="Recency"  placeholder="Number of days since customer's last purchase" required="required">
-                      </div>
-
-                      
-
-                      <div class="mb-3">
-                        <label for="'Wines'">Amount spent on wine in last 2 years</label>
-                        <input type="number" class="form-control" id="Wines" name="Wines"  placeholder="Amount spent on wine in last 2 years" required="required">
-                      </div>
-
-                      <div class="mb-3">
-                        <label for="Fruits">Amount spent on Fruits in last 2 years</label>
-                        <input type="number" class="form-control" id="Fruits" name="Fruits"  placeholder="Amount spent on Fruits in last 2 years" required="required">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Meat">Amount spent on Meat in last 2 years</label>
-                        <input type="number" class="form-control" id="Meat" name="Meat"  placeholder="Amount spent on Meat in last 2 years" required="required">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Fish">Amount spent on Fish in last 2 years</label>
-                        <input type="number" step="0.01" class="form-control" id="Fish" name="Fish"  placeholder="Amount spent on Fish in last 2 years" required="required">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Sweets">Amount spent on Sweets in last 2 years</label>
-                        <input type="number" class="form-control" id="Sweets" name="Sweets"  placeholder="Amount spent on Sweets in last 2 years" required="required">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Gold">Amount spent on Gold in last 2 years</label>
-                        <input type="number" class="form-control" id="Gold" name="Gold"  placeholder="Amount spent on Gold in last 2 years" required="required">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Web">Number of purchases made through the company’s website </label>
-                        <input type="number" class="form-control" id="Web" name="Web"  placeholder="Number of purchases made through the company’s website " required="required">
-                      </div>
-
-                      <div class="mb-3">
-                        <label for="Catalog"> Number of purchases made using a catalogue
-                        </label>
-                        <input type="number" class="form-control" id="Catalog" name="Catalog"  placeholder="Number of purchases made using a catalogue " required="required">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Store">Number of purchases made directly in stores </label>
-                        <input type="number" class="form-control" id="Store" name="Store"  placeholder="Number of purchases made directly in stores " required="required">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Discount_Purchases">Number of purchases made with a discount</label>
-                        <input type="number" class="form-control" id="Discount_Purchases" name="Discount_Purchases"  placeholder="Number of purchases made with a discount" required="required">
-                      </div>
-                      <div class="mb-3">
-                        <label for="Total_Promo">Number of promotion offers customer has accepted</label>
-                        <input type="number" class="form-control" id="Total_Promo" name="Total_Promo"  placeholder="Number of promotion offers customer has accepted" required="required">
-                      </div>
-                      
-
-                      <div class="mb-3">
-                        <label for="NumWebVisitsMonth">Number of visits to company’s website in the last month</label>
-                        <input type="number" class="form-control" id="NumWebVisitsMonth" name="NumWebVisitsMonth"  placeholder="Number of visits to company’s website in the last month" required="required">
-                      </div>
-                      
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-                        <input class="btn btn-primary" type="submit" value="Predict Customer Cluster" required />
+        <!-- Welcome Hero Section -->
+        <div class="mb-8 text-center sm:text-left">
+            <h1 class="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent sm:text-5xl">
+                Precision Segmentation System
+            </h1>
+            <p class="mt-2 text-lg text-slate-500 dark:text-slate-400 max-w-3xl">
+                Upgraded customer personality categorizer model utilizing stateful PCA feature reduction, K-Means clustering, and classification algorithms.
+            </p>
+        </div>
+
+        <!-- Quick Demo Fill Section -->
+        <div class="mb-8 p-6 glass rounded-2xl shadow-sm">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-primary-500"></i> Quick Demo Profile Prefills
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <button onclick="loadDemoProfile('value_shopper')" class="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 hover:border-primary-400 dark:hover:border-primary-600 transition-all text-left group">
+                    <div>
+                        <div class="font-bold text-slate-700 dark:text-slate-300">Value-Seeking Family</div>
+                        <div class="text-xs text-slate-400">Moderate income, cost-focused</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-primary-500 transition-colors"></i>
+                </button>
+                <button onclick="loadDemoProfile('premium_aficionado')" class="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 hover:border-primary-400 dark:hover:border-primary-600 transition-all text-left group">
+                    <div>
+                        <div class="font-bold text-slate-700 dark:text-slate-300">Affluent Shopper</div>
+                        <div class="text-xs text-slate-400">High income, high spending</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-primary-500 transition-colors"></i>
+                </button>
+                <button onclick="loadDemoProfile('frugal_starter')" class="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 hover:border-primary-400 dark:hover:border-primary-600 transition-all text-left group">
+                    <div>
+                        <div class="font-bold text-slate-700 dark:text-slate-300">Young Frugal Starter</div>
+                        <div class="text-xs text-slate-400">Young demographic, minimal spend</div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-primary-500 transition-colors"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Side: Interactive 3-Tab Prediction Form -->
+            <div class="lg:col-span-7">
+                <div class="glass rounded-3xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+                    
+                    <!-- Tabs Header -->
+                    <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-950/50 p-2 gap-2">
+                        <button onclick="switchTab('tab-demographics')" id="btn-tab-demographics" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 bg-white dark:bg-slate-900 text-primary-500 shadow-sm border border-slate-200/50 dark:border-slate-800/50 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-id-card"></i> Demographics
+                        </button>
+                        <button onclick="switchTab('tab-spending')" id="btn-tab-spending" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-900/50 transition-all duration-300 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-coins"></i> Spending
+                        </button>
+                        <button onclick="switchTab('tab-behavior')" id="btn-tab-behavior" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-900/50 transition-all duration-300 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-chart-line"></i> Behavior
+                        </button>
+                    </div>
+
+                    <!-- Form Body -->
+                    <form action="/predict" method="post" id="prediction-form" class="p-8">
+                        
+                        <!-- Tab 1: Demographics -->
+                        <div id="tab-demographics" class="space-y-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Age">Age</label>
+                                    <input type="number" name="Age" id="Age" value="{{ input_values.Age if input_values else 35 }}" min="18" max="120" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Education">Education</label>
+                                    <select name="Education" id="Education" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                        <option value="0" {% if input_values and input_values.Education == 0 %}selected{% endif %}>Basic / High-School</option>
+                                        <option value="1" {% if input_values and input_values.Education == 1 %}selected{% endif %}>Diploma / Cycle</option>
+                                        <option value="2" {% if not input_values or input_values.Education == 2 %}selected{% endif %}>Bachelor / Graduation</option>
+                                        <option value="3" {% if input_values and input_values.Education == 3 %}selected{% endif %}>Master</option>
+                                        <option value="4" {% if input_values and input_values.Education == 4 %}selected{% endif %}>PhD</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Marital_Status">Marital Status (Living with Partner)</label>
+                                    <select name="Marital_Status" id="Marital_Status" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                        <option value="0" {% if input_values and input_values.Marital_Status == 0 %}selected{% endif %}>No (Single, Alone, Divorced, Widow)</option>
+                                        <option value="1" {% if not input_values or input_values.Marital_Status == 1 %}selected{% endif %}>Yes (Married, Together)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Parental_Status">Has Kids</label>
+                                    <select name="Parental_Status" id="Parental_Status" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                        <option value="0" {% if input_values and input_values.Parental_Status == 0 %}selected{% endif %}>No children</option>
+                                        <option value="1" {% if not input_values or input_values.Parental_Status == 1 %}selected{% endif %}>Yes, has kids</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Children">Total Kids in Household</label>
+                                    <input type="number" name="Children" id="Children" value="{{ input_values.Children if input_values else 1 }}" min="0" max="10" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Income">Yearly Income ($)</label>
+                                    <input type="number" step="0.1" name="Income" id="Income" value="{{ input_values.Income if input_values else 55000 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Days_as_Customer">Days as Customer</label>
+                                    <input type="number" name="Days_as_Customer" id="Days_as_Customer" value="{{ input_values.Days_as_Customer if input_values else 450 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tab 2: Spending -->
+                        <div id="tab-spending" class="hidden space-y-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Total_Spending">Total Spending (2 yrs)</label>
+                                    <input type="number" step="0.1" name="Total_Spending" id="Total_Spending" value="{{ input_values.Total_Spending if input_values else 600 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Wines">Wines ($)</label>
+                                    <input type="number" name="Wines" id="Wines" value="{{ input_values.Wines if input_values else 300 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Fruits">Fruits ($)</label>
+                                    <input type="number" name="Fruits" id="Fruits" value="{{ input_values.Fruits if input_values else 30 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Meat">Meat Products ($)</label>
+                                    <input type="number" name="Meat" id="Meat" value="{{ input_values.Meat if input_values else 150 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Fish">Fish Products ($)</label>
+                                    <input type="number" step="0.1" name="Fish" id="Fish" value="{{ input_values.Fish if input_values else 40 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Sweets">Sweets ($)</label>
+                                    <input type="number" name="Sweets" id="Sweets" value="{{ input_values.Sweets if input_values else 30 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Gold">Gold Products ($)</label>
+                                    <input type="number" step="0.1" name="Gold" id="Gold" value="{{ input_values.Gold if input_values else 50 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tab 3: Behavior -->
+                        <div id="tab-behavior" class="hidden space-y-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Recency">Recency (Days since last purchase)</label>
+                                    <input type="number" name="Recency" id="Recency" value="{{ input_values.Recency if input_values else 45 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Web">Web Purchases</label>
+                                    <input type="number" name="Web" id="Web" value="{{ input_values.Web if input_values else 4 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Catalog">Catalog Purchases</label>
+                                    <input type="number" name="Catalog" id="Catalog" value="{{ input_values.Catalog if input_values else 2 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Store">Store Purchases</label>
+                                    <input type="number" name="Store" id="Store" value="{{ input_values.Store if input_values else 6 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Discount_Purchases">Discount Purchases</label>
+                                    <input type="number" name="Discount_Purchases" id="Discount_Purchases" value="{{ input_values.Discount_Purchases if input_values else 2 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="Total_Promo">Promo Offers Accepted</label>
+                                    <input type="number" name="Total_Promo" id="Total_Promo" value="{{ input_values.Total_Promo if input_values else 1 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-500 dark:text-slate-400 mb-2" for="NumWebVisitsMonth">Website Visits (Month)</label>
+                                    <input type="number" name="NumWebVisitsMonth" id="NumWebVisitsMonth" value="{{ input_values.NumWebVisitsMonth if input_values else 6 }}" min="0" required class="w-full bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
+                            <button type="button" onclick="resetForm()" class="px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-semibold hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors text-sm">
+                                <i class="fa-solid fa-arrow-rotate-left"></i> Reset
+                            </button>
+                            <button type="submit" class="flex-1 sm:flex-initial bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl px-8 py-3.5 shadow-lg shadow-primary-500/25 transition-all text-center">
+                                <i class="fa-solid fa-brain mr-2"></i> Predict Customer Cluster
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Batch Prediction Upload -->
+                <div class="mt-8 glass rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-lg">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-white mb-3">
+                        <i class="fa-solid fa-file-import text-primary-500 mr-2"></i> Batch CSV Segmentation
+                    </h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                        Upload a CSV file containing multiple customer features to classify all rows. The system returns the original file with prediction clusters appended.
+                    </p>
+                    <form action="/api/predict/file" method="post" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-4 items-stretch">
+                        <input type="file" name="file" accept=".csv" required class="flex-1 text-sm bg-slate-100/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary-100 dark:file:bg-primary-950 file:text-primary-600 dark:file:text-primary-400 outline-none">
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl px-6 py-3 shadow-lg shadow-purple-600/25 transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Process & Download
+                        </button>
+                    </form>
+                </div>
+                
+            </div>
+
+            <!-- Right Side: Beautiful Prediction Results -->
+            <div class="lg:col-span-5 space-y-8">
+                
+                <!-- Results Card -->
+                <div class="glass rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-lg relative overflow-hidden min-h-[400px] flex flex-col justify-between">
+                    
+                    {% if context == "Rendering" %}
+                    <!-- Idle State -->
+                    <div class="my-auto text-center space-y-4">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
+                            <i class="fa-solid fa-users text-3xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800 dark:text-white">Awaiting Analysis</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-2">
+                                Fill in details or select a demo prefill profile to analyze customer personality characteristics.
+                            </p>
+                        </div>
+                    </div>
+                    {% elif context == "Error" %}
+                    <!-- Error State -->
+                    <div class="my-auto text-center space-y-4">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-950 flex items-center justify-center text-red-500">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800 dark:text-white">Analysis Failed</h3>
+                            <p class="text-sm text-red-500 mt-2">{{ error_msg }}</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- Success Prediction State -->
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Segmentation Output</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-primary-100 dark:bg-primary-950 text-primary-600 dark:text-primary-300 border border-primary-200/50 dark:border-primary-800/50">Active Model v1.0</span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-sm font-semibold text-slate-400">Predicted:</span>
+                                <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">Cluster {{ context }}</h2>
+                            </div>
+                            
+                            <!-- Persona Header -->
+                            <div class="p-4 rounded-2xl bg-gradient-to-r from-primary-500/10 to-purple-500/10 border border-primary-500/20">
+                                <div class="font-bold text-lg text-primary-500 dark:text-primary-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-user-tag"></i> {{ persona.name }}
+                                </div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Spending Tier: <span class="font-bold text-slate-700 dark:text-slate-300">{{ persona.spending_tier }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="space-y-2 mt-4">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Characteristics</h4>
+                                <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ persona.description }}</p>
+                            </div>
+                            
+                            <!-- Marketing Strategy -->
+                            <div class="space-y-2 mt-4">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Suggested Campaign Strategy</h4>
+                                <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-3.5 rounded-xl border border-slate-200/50 dark:border-slate-800/50 italic">
+                                    "{{ persona.strategy }}"
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     
-                </form>
+                    <!-- Chart canvas -->
+                    <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">Spending Profile (Visualization)</h4>
+                        <div class="h-48">
+                            <canvas id="spending-chart"></canvas>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                </div>
             </div>
-            <div class="text-center text-black">
-                <h2 class="display-4 fw-bolder">Customer is in Cluster : {{context}} </h2>
-            </div>
+            
         </div>
-    </section>
-    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
-    <script type="text/javascript">
-        $(".input").focus(function(){
-            $(this).parent().addClass("focus");
-        }).blur(function(){
-            if($(this).val() === ''){
-                $(this).parent().removeClass("focus");
+    </main>
+
+    <footer class="mt-16 border-t border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-950/50 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p>Developed with ❤️ by <a href="https://github.com/raghvendrabhati02" target="_blank" class="font-semibold text-primary-500 hover:underline">Raghvendra Bhati</a> | AI Engineer Portfolio Project</p>
+            <p class="text-xs mt-1 text-slate-400">PrecisionCustomer segmentation system fits K-Means and stateful PCA. Original assignment templates corrected.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript logic -->
+    <script>
+        // Dark Mode support
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById("theme-icon");
+            if (html.classList.contains("dark")) {
+                html.classList.remove("dark");
+                icon.className = "fa-solid fa-sun text-amber-500";
+                localStorage.setItem("theme", "light");
+            } else {
+                html.classList.add("dark");
+                icon.className = "fa-solid fa-moon text-amber-400";
+                localStorage.setItem("theme", "dark");
             }
-        })
+        }
+        
+        // Initial Theme sync
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "light") {
+            document.documentElement.classList.remove("dark");
+            const icon = document.getElementById("theme-icon");
+            if(icon) icon.className = "fa-solid fa-sun text-amber-500";
+        }
+
+        // 3-Tab switcher logic
+        let currentTabId = "tab-demographics";
+        function switchTab(tabId) {
+            document.getElementById(currentTabId).classList.add("hidden");
+            document.getElementById(`btn-${currentTabId}`).className = "flex-1 py-3 px-4 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-900/50 transition-all duration-300 flex items-center justify-center gap-2";
+            
+            document.getElementById(tabId).classList.remove("hidden");
+            document.getElementById(`btn-${tabId}`).className = "flex-1 py-3 px-4 rounded-xl text-sm font-semibold bg-white dark:bg-slate-900 text-primary-500 shadow-sm border border-slate-200/50 dark:border-slate-800/50 flex items-center justify-center gap-2";
+            
+            currentTabId = tabId;
+        }
+
+        // Demo data fetching and form filler
+        async function loadDemoProfile(profileName) {
+            try {
+                const response = await fetch("/api/demo");
+                const profiles = await response.json();
+                const selected = profiles[profileName];
+                
+                if (selected) {
+                    for (const [key, value] of Object.entries(selected)) {
+                        const inputElement = document.getElementById(key);
+                        if (inputElement) {
+                            inputElement.value = value;
+                        }
+                    }
+                    // Highlight tabs that are filled
+                    showToast(`Loaded ${profileName.replace('_', ' ')} values!`);
+                }
+            } catch (err) {
+                console.error("Failed to load demo profile:", err);
+            }
+        }
+
+        // Toast notifications
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm transition-opacity duration-300 z-50 border border-slate-800 dark:border-slate-100";
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-green-500"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function resetForm() {
+            document.getElementById("prediction-form").reset();
+            showToast("Form cleared!");
+        }
+
+        // Render Spending Profile Chart.js if context/results are loaded
+        {% if context != "Rendering" and context != "Error" %}
+        const ctx = document.getElementById('spending-chart').getContext('2d');
+        const spendingChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Wines', 'Fruits', 'Meat', 'Fish', 'Sweets', 'Gold'],
+                datasets: [{
+                    label: 'Spent Amount ($)',
+                    data: [
+                        {{ input_values.Wines if input_values else 0 }},
+                        {{ input_values.Fruits if input_values else 0 }},
+                        {{ input_values.Meat if input_values else 0 }},
+                        {{ input_values.Fish if input_values else 0 }},
+                        {{ input_values.Sweets if input_values else 0 }},
+                        {{ input_values.Gold if input_values else 0 }}
+                    ],
+                    backgroundColor: [
+                        'rgba(239, 68, 68, 0.75)',  // Wines
+                        'rgba(245, 158, 11, 0.75)',  // Fruits
+                        'rgba(168, 85, 247, 0.75)',  // Meat
+                        'rgba(14, 165, 233, 0.75)',  // Fish
+                        'rgba(236, 72, 153, 0.75)',  // Sweets
+                        'rgba(234, 179, 8, 0.75)'    // Gold
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(156, 163, 175, 0.8)',
+                            font: {
+                                family: 'Outfit',
+                                size: 11
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(156, 163, 175, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(156, 163, 175, 0.8)',
+                            font: {
+                                family: 'Outfit',
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        {% endif %}
     </script>
-  </body>
+</body>
 </html>
