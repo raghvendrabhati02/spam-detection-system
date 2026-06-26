@@ -62,34 +62,61 @@ class DataIngestion:
 
     
         
-    def export_data_into_feature_store(self)->DataFrame:
+    def export_data_into_feature_store(self) -> DataFrame:
         """
         Method Name :   export_data_into_feature_store
-        Description :   This method reads data from mongodb and saves it into artifacts. 
+        Description :   This method reads data from mongodb (or falls back to local file) and saves it into artifacts. 
         
         Output      :   dataset is returned as a DataFrame
         On Failure  :   Write an exception log and then raise an exception
         
-        Version     :   0.1
-       
+        Version     :   1.0
         """
         try:
-            logging.info(f"Exporting data from mongodb")
-            customer_data = CustomerData()
-            customer_dataframe = customer_data.export_collection_as_dataframe(
-                collection_name=COLLECTION_NAME
-            )
-           
-            logging.info(f"Shape of dataframe: {customer_dataframe.shape}")
-            feature_store_file_path  = self.data_ingestion_config.feature_store_file_path
+            customer_dataframe = None
+            try:
+                logging.info("Exporting data from MongoDB database...")
+                customer_data = CustomerData()
+                customer_dataframe = customer_data.export_collection_as_dataframe(
+                    collection_name=COLLECTION_NAME
+                )
+                logging.info(f"Successfully retrieved data from MongoDB. Shape: {customer_dataframe.shape}")
+            except Exception as mongo_err:
+                logging.warning(f"MongoDB connection failed: {mongo_err}. Falling back to local file.")
+                
+                # Check standard locations for the fallback file
+                fallback_paths = [
+                    os.path.join("notebooks", "marketing_campaign.csv"),
+                    os.path.join("data", "marketing_campaign.csv"),
+                    "marketing_campaign.csv"
+                ]
+                
+                fallback_path = None
+                for path in fallback_paths:
+                    if os.path.exists(path):
+                        fallback_path = path
+                        break
+                
+                if fallback_path is None:
+                    raise Exception("MongoDB not available and local marketing_campaign.csv fallback file was not found.") from mongo_err
+                
+                logging.info(f"Loading local dataset from: {fallback_path}")
+                # The raw marketing campaign dataset uses tab separators
+                import pandas as pd
+                customer_dataframe = pd.read_csv(fallback_path, sep="\t")
+                customer_dataframe.replace({"na": np.nan}, inplace=True)
+                logging.info(f"Loaded local data. Shape: {customer_dataframe.shape}")
+            
+            feature_store_file_path = self.data_ingestion_config.feature_store_file_path
             dir_path = os.path.dirname(feature_store_file_path)
-            os.makedirs(dir_path,exist_ok=True)
+            os.makedirs(dir_path, exist_ok=True)
+            
             logging.info(f"Saving exported data into feature store file path: {feature_store_file_path}")
-            customer_dataframe.to_csv(feature_store_file_path,index=False,header=True)
+            customer_dataframe.to_csv(feature_store_file_path, index=False, header=True)
             return customer_dataframe
 
         except Exception as e:
-            raise CustomerException(e,sys)
+            raise CustomerException(e, sys) from e
 
     def initiate_data_ingestion(self) -> DataIngestionArtifact:
         """

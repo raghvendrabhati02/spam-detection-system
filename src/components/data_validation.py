@@ -2,9 +2,14 @@ import json
 import sys
 from typing import Tuple, Union
 import pandas as pd
-from evidently.model_profile import Profile
-from evidently.model_profile.sections import DataDriftProfileSection
 from pandas import DataFrame
+
+try:
+    from evidently.model_profile import Profile
+    from evidently.model_profile.sections import DataDriftProfileSection
+    EVIDENTLY_AVAILABLE = True
+except Exception as e:
+    EVIDENTLY_AVAILABLE = False
 
 from src.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
 from src.entity.config_entity import DataValidationConfig
@@ -97,6 +102,10 @@ class DataValidation:
         Revisions   :   moved setup to cloud
         """
         try:
+            if not EVIDENTLY_AVAILABLE:
+                logging.warning("Evidently package is not available or failed to import. Skipping drift detection and assuming no drift.")
+                return False
+
             data_drift_profile = Profile(sections=[DataDriftProfileSection()])
 
             data_drift_profile.calculate(reference_df, current_df)

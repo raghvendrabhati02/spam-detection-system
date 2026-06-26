@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler, PowerTransformer
 from src.entity.config_entity import DataTransformationConfig
 from src.entity.artifact_entity import DataTransformationArtifact, DataIngestionArtifact, DataValidationArtifact
 from src.components.data_ingestion import DataIngestion
-from src.components.data_clustering import CreateClusters
+from src.components.data_clustering import CustomerClusteringTransformer
 from src.constant.training_pipeline import TARGET_COLUMN
 from src.entity.config_entity import SimpleImputerConfig
 from src.exception import CustomerException
@@ -68,10 +68,10 @@ class DataTransformation:
             dataset['Age']=2022-dataset['Year_Birth']   
 
             ###  recoding the customer's education level to numeric form (0: high-school, 1: diploma, 2: bachelors, 3: masters, and 4: doctorates)
-            dataset["Education"].replace({"Basic":0,"2n Cycle":1, "Graduation":2, "Master":3, "PhD":4},inplace=True)  
+            dataset["Education"] = pd.to_numeric(dataset["Education"].replace({"Basic":0,"2n Cycle":1, "Graduation":2, "Master":3, "PhD":4}))  
 
             #  recoding the customer's marital status to numeric form (0: not living with a partner, 1: living with a partner) 
-            dataset['Marital_Status'].replace({"Married":1, "Together":1, "Absurd":0, "Widow":0, "YOLO":0, "Divorced":0, "Single":0,"Alone":0},inplace=True) 
+            dataset['Marital_Status'] = pd.to_numeric(dataset['Marital_Status'].replace({"Married":1, "Together":1, "Absurd":0, "Widow":0, "YOLO":0, "Divorced":0, "Single":0,"Alone":0})) 
 
             #  creating a new field to store the number of children in the household
             dataset['Children']=dataset['Kidhome']+dataset['Teenhome']
@@ -86,7 +86,7 @@ class DataTransformation:
             dataset["Total Promo"] =  dataset["AcceptedCmp1"]+ dataset["AcceptedCmp2"]+ dataset["AcceptedCmp3"]+ dataset["AcceptedCmp4"]+ dataset["AcceptedCmp5"]
 
             ## The following code works out how long the customer has been with the company and store the total number of promotions the customers responded to
-            dataset['Dt_Customer']=pd.to_datetime(dataset['Dt_Customer'])
+            dataset['Dt_Customer']=pd.to_datetime(dataset['Dt_Customer'], format='mixed', dayfirst=True)
             today=datetime.today()
             dataset['Days_as_Customer']=(today-dataset['Dt_Customer']).dt.days
             dataset['Offers_Responded_To']=dataset['AcceptedCmp1']+dataset['AcceptedCmp2']+dataset['AcceptedCmp3']+dataset['AcceptedCmp4']+dataset['AcceptedCmp5']+dataset['Response']
@@ -94,7 +94,7 @@ class DataTransformation:
 
             #dropping columns which are already used to create new features
             columns_to_drop = ['Year_Birth','Kidhome','Teenhome']
-            dataset.drop(columns = columns_to_drop, axis = 1, inplace=True)
+            dataset.drop(columns = columns_to_drop, inplace=True)
             dataset.rename(columns={"Marital_Status": "Marital Status","MntWines": "Wines","MntFruits":"Fruits",
                             "MntMeatProducts":"Meat","MntFishProducts":"Fish","MntSweetProducts":"Sweets",
                             "MntGoldProds":"Gold","NumWebPurchases": "Web","NumCatalogPurchases":"Catalog",
@@ -220,17 +220,24 @@ class DataTransformation:
                 
                 preprocessed_train_set,  preprocessed_test_set  = self.transform_data(train_set, test_set)
                 
-                cluster_creator = CreateClusters()
+                cluster_creator = CustomerClusteringTransformer()
+                cluster_creator.fit(preprocessed_train_set)
 
-                labelled_train_set = cluster_creator.initialize_clustering(preprocessed_data=preprocessed_train_set)
-                labelled_test_set = cluster_creator.initialize_clustering(preprocessed_data=preprocessed_test_set)
+                labelled_train_set = cluster_creator.transform(preprocessed_data=preprocessed_train_set)
+                labelled_test_set = cluster_creator.transform(preprocessed_data=preprocessed_test_set)
                 
+                # Save the clustering transformer object alongside the preprocessor
+                clustering_obj_path = os.path.join(
+                    os.path.dirname(self.data_transformation_config.transformed_object_file_path),
+                    "clustering.pkl"
+                )
+                self.utils.save_object(clustering_obj_path, cluster_creator)
+                logging.info(f"Saved Clustering Transformer object to {clustering_obj_path}")
                 
-                
-                X_train = labelled_train_set.drop(columns=[TARGET_COLUMN], axis=1)
+                X_train = labelled_train_set.drop(columns=[TARGET_COLUMN])
                 y_train = labelled_train_set[TARGET_COLUMN]
                 
-                X_test = labelled_test_set.drop(columns=[TARGET_COLUMN], axis=1)
+                X_test = labelled_test_set.drop(columns=[TARGET_COLUMN])
                 y_test = labelled_test_set[TARGET_COLUMN]
                 
                 train_arr = np.c_[
