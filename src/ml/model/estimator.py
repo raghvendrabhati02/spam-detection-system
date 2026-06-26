@@ -15,7 +15,7 @@ class CustomerSegmentationModel:
         self.trained_model_object = trained_model_object
 
     def predict(self, dataframe: DataFrame) -> DataFrame:
-        logging.info("Entered predict method of srcTruckModel class")
+        logging.info("Entered predict method of CustomerSegmentationModel class")
 
         try:
             logging.info("Using the trained model to get predictions")
