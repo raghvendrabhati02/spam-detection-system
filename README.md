@@ -185,3 +185,9 @@ This repository is maintained as part of a personal AI/ML engineering portfolio.
 - **Original Author/Credits**: iNeuron.ai Open Source Template
 - **Upgrades, Refactoring, & UI Redesign**: [Raghvendra Bhati](https://github.com/raghvendrabhati02)
 - **License**: Licensed under the [MIT License](LICENSE).
+
+## Latest Updates
+
+- Improved project documentation.
+- Enhanced project structure.
+- Ongoing maintenance and feature improvements.
